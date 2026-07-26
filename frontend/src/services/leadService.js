@@ -1,115 +1,85 @@
 import axiosInstance from "./axiosInstance";
 
-// Get all leads
-export const getLeads = async () => {
-  const token = localStorage.getItem("access");
-
-  const response = await axiosInstance.get("leads/", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+// ==============================
+// Get Leads (with pagination)
+// ==============================
+export const getLeads = async (page = 1) => {
+  const response = await axiosInstance.get(`leads/?page=${page}`);
   return response.data;
 };
 
-// Create a new lead
+// ==============================
+// Get Single Lead
+// ==============================
+export const getLead = async (id) => {
+  const response = await axiosInstance.get(`leads/${id}/`);
+  return response.data;
+};
+
+// ==============================
+// Create Lead
+// ==============================
 export const createLead = async (leadData) => {
-  const token = localStorage.getItem("access");
-
-  const response = await axiosInstance.post("leads/", leadData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+  const response = await axiosInstance.post("leads/", leadData);
   return response.data;
 };
 
-// Update an existing lead
+// ==============================
+// Update Lead
+// ==============================
 export const updateLead = async (id, leadData) => {
-  const token = localStorage.getItem("access");
-
   const response = await axiosInstance.put(
     `leads/${id}/`,
-    leadData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    leadData
   );
 
   return response.data;
 };
 
-// Archive (soft delete) a lead
+// ==============================
+// Archive Lead
+// ==============================
 export const archiveLead = async (id) => {
-  const token = localStorage.getItem("access");
-
-  const response = await axiosInstance.delete(`leads/${id}/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axiosInstance.delete(
+    `leads/${id}/`
+  );
 
   return response.data;
 };
 
-export const getLead = async (id) => {
-  const token = localStorage.getItem("access");
-
-  const response = await axiosInstance.get(`leads/${id}/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return response.data;
-};
-
+// ==============================
+// Restore Lead
+// ==============================
 export const restoreLead = async (id) => {
-  const token = localStorage.getItem("access");
-
   const response = await axiosInstance.post(
     `leads/${id}/restore/`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    {}
   );
 
   return response.data;
 };
 
+// ==============================
+// Archived Leads
+// ==============================
 export const getArchivedLeads = async () => {
-  const token = localStorage.getItem("access");
-
   const response = await axiosInstance.get(
-    "leads/archived/",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    "leads/archived/"
   );
 
   return response.data;
 };
 
-
-
+// ==============================
+// Export CSV
+// ==============================
 export const exportCSV = async () => {
-  const token = localStorage.getItem("access");
-
-  const response = await axiosInstance.get("export-csv/", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    responseType: "blob",
-  });
+  const response = await axiosInstance.get(
+    "export-csv/",
+    {
+      responseType: "blob",
+    }
+  );
 
   return response.data;
 };

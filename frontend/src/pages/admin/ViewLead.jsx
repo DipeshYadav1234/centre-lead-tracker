@@ -79,7 +79,7 @@ const ViewLead = () => {
 
           <div>
             <h4 className="font-semibold">Next Follow-up</h4>
-            <p>{lead.next_followup}</p>
+            <p>{lead.next_followup  ? new Date(lead.next_followup).toLocaleString("en-IN", {day: "2-digit",month: "short",year: "numeric",hour: "2-digit",minute: "2-digit",hour12: true,}): "-"} </p>
           </div>
 
           <div className="col-span-2">

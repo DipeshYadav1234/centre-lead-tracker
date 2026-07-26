@@ -26,17 +26,28 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
   const fetchUsers = async () => {
     try {
       const data = await getUsers();
-      setUsers(data);
+
+      console.log("Users API:", data);
+
+      // Supports both paginated and normal array responses
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else if (Array.isArray(data.results)) {
+        setUsers(data.results);
+      } else {
+        setUsers([]);
+      }
     } catch (error) {
-      console.error("Failed to load users", error);
+      console.error("Failed to load users:", error);
+      setUsers([]);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -59,6 +70,7 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
       <div className="bg-white rounded-xl shadow-xl w-[900px] p-8">
+
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">
             Add New Lead
@@ -76,6 +88,7 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
           onSubmit={handleSubmit}
           className="grid grid-cols-2 gap-5"
         >
+
           <input
             name="parent_name"
             placeholder="Parent Name"
@@ -95,8 +108,8 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
           />
 
           <input
-            name="child_age"
             type="number"
+            name="child_age"
             placeholder="Child Age"
             value={formData.child_age}
             onChange={handleChange}
@@ -113,8 +126,8 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
           />
 
           <input
-            name="email"
             type="email"
+            name="email"
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
@@ -144,7 +157,6 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
             <option value="Website">Website</option>
           </select>
 
-          {/* Assigned Owner Dropdown */}
           <select
             name="assigned_owner"
             value={formData.assigned_owner}
@@ -154,14 +166,18 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
           >
             <option value="">Select Owner</option>
 
-            {users.map((user) => (
-              <option
-                key={user.id}
-                value={user.id}
-              >
-                {user.username}
-              </option>
-            ))}
+            {users.length > 0 ? (
+              users.map((user) => (
+                <option
+                  key={user.id}
+                  value={user.id}
+                >
+                  {user.username}
+                </option>
+              ))
+            ) : (
+              <option disabled>No users available</option>
+            )}
           </select>
 
           <input
@@ -173,8 +189,8 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
           />
 
           <textarea
-            name="notes"
             rows="4"
+            name="notes"
             placeholder="Notes..."
             value={formData.notes}
             onChange={handleChange}
@@ -182,6 +198,7 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
           />
 
           <div className="col-span-2 flex justify-end gap-4 mt-4">
+
             <button
               type="button"
               onClick={onClose}
@@ -196,7 +213,9 @@ const AddLeadModal = ({ onClose, refreshLeads }) => {
             >
               Save Lead
             </button>
+
           </div>
+
         </form>
       </div>
     </div>
