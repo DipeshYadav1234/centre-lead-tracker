@@ -9,8 +9,9 @@ from leads.serializers import LeadSerializer
 class UserDashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
+    
     def get(self, request):
-
+        print("Logged in user:", request.user.username)
         my_leads = Lead.objects.filter(
             assigned_owner=request.user,
             is_archived=False
@@ -26,3 +27,5 @@ class UserDashboardView(APIView):
         }
 
         return Response(data)
+
+    

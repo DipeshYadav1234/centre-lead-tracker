@@ -5,6 +5,10 @@ from .models import Lead
 
 
 class LeadSerializer(serializers.ModelSerializer):
+    assigned_owner_name = serializers.CharField(
+        source="assigned_owner.username",
+        read_only=True
+    )
 
     class Meta:
         model = Lead
