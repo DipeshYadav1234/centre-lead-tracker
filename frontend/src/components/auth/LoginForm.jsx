@@ -1,25 +1,47 @@
-import { useState } from "react";
-import { loginUser } from "../../services/authService";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { AuthContext } from "../../context/AuthContext";
+import { loginUser, getCurrentUser } from "../../services/authService";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
-    const data = await loginUser(username, password);
+    // Login and receive JWT
+    const tokens = await loginUser(username, password);
 
-    localStorage.setItem("access", data.access);
-    localStorage.setItem("refresh", data.refresh);
+    localStorage.setItem("access", tokens.access);
+    localStorage.setItem("refresh", tokens.refresh);
 
-    navigate("/dashboard");
+    // Fetch current user
+    const user = await getCurrentUser();
+
+    // Store user in context
+    login(user);
+
+    // Redirect based on role
+    if (user.is_staff) {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/user/dashboard");
+    }
+
   } catch (error) {
-    alert("Invalid username or password");
-    console.error(error);
+    console.log(error);
+
+    if (error.response) {
+      console.log(error.response.status);
+      console.log(error.response.data);
+    }
+
+    alert("Login failed");
   }
 };
 
@@ -71,7 +93,7 @@ function LoginForm() {
 
         </div>
 
-        <button
+        <button type="submit"
           className="w-full bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-lg font-semibold transition"
         >
           Login

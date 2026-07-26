@@ -8,3 +8,15 @@ export const loginUser = async (username, password) => {
 
   return response.data;
 };
+
+export const getCurrentUser = async () => {
+  const token = localStorage.getItem("access");
+
+  const response = await axiosInstance.get("me/", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

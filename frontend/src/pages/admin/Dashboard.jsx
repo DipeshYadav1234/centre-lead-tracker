@@ -1,9 +1,14 @@
 
 import React, { useEffect, useState } from "react";
-import { getDashboardData } from "../services/dashboardService";
+import { getDashboardStats } from "../../services/dashboardService";
 
 const Dashboard = () => {
-  const [leads, setLeads] = useState([]);
+  const [stats, setStats] = useState({
+  total_leads: 0,
+  overdue: 0,
+  demo_scheduled: 0,
+  converted: 0,
+});
 
 useEffect(() => {
     fetchDashboard();
@@ -11,28 +16,14 @@ useEffect(() => {
 
 const fetchDashboard = async () => {
     try {
-        const data = await getDashboardData();
-        setLeads(data);
+        const data = await getDashboardStats();
+        setStats(data);
     } catch (error) {
         console.error(error);
     }
 };
 
-const totalLeads = leads.length;
 
-const converted = leads.filter(
-    lead => lead.status === "Converted"
-).length;
-
-const demoScheduled = leads.filter(
-    lead => lead.status === "Demo Scheduled"
-).length;
-
-const overdue = leads.filter(lead => {
-    if (!lead.next_followup) return false;
-
-    return new Date(lead.next_followup) < new Date();
-}).length;
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -99,7 +90,7 @@ const overdue = leads.filter(lead => {
               </h3>
 
               <p className="text-4xl font-bold text-blue-600">
-                {totalLeads}
+                {stats.total_leads}
               </p>
 
             </div>
@@ -111,7 +102,7 @@ const overdue = leads.filter(lead => {
               </h3>
 
               <p className="text-4xl font-bold text-red-500">
-                {overdue}
+                {stats.overdue}
               </p>
 
             </div>
@@ -123,7 +114,7 @@ const overdue = leads.filter(lead => {
               </h3>
 
               <p className="text-4xl font-bold text-yellow-500">
-                {demoScheduled}
+                {stats.demo_scheduled}
               </p>
 
             </div>
@@ -135,7 +126,7 @@ const overdue = leads.filter(lead => {
               </h3>
 
               <p className="text-4xl font-bold text-green-600">
-                {converted}
+                {stats.converted}
               </p>
 
             </div>
