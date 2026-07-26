@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { getDashboardStats } from "../../services/dashboardService";
 import { updateLead } from "../../services/leadService";
 
 const UserDashboard = () => {
   const [data, setData] = useState(null);
+
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     loadDashboard();
@@ -36,6 +42,14 @@ const UserDashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
+
+    navigate("/");
+  };
+
   if (!data) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -53,7 +67,10 @@ const UserDashboard = () => {
           Centre Lead Tracker
         </h1>
 
-        <button className="bg-white text-blue-700 px-4 py-2 rounded-lg">
+        <button
+          onClick={handleLogout}
+          className="bg-white text-blue-700 px-5 py-2 rounded-lg hover:bg-gray-100 transition"
+        >
           Logout
         </button>
       </nav>
@@ -61,7 +78,7 @@ const UserDashboard = () => {
       <div className="p-8">
 
         <h1 className="text-3xl font-bold">
-          Welcome User 👋
+          Welcome {user?.first_name || user?.username} 👋
         </h1>
 
         <p className="text-gray-600 mt-2">
@@ -115,7 +132,10 @@ const UserDashboard = () => {
             <tbody>
 
               {data.leads.map((lead) => (
-                <tr key={lead.id} className="border-b">
+                <tr
+                  key={lead.id}
+                  className="border-b hover:bg-gray-50"
+                >
 
                   <td className="p-2">
                     {lead.parent_name}

@@ -9,6 +9,7 @@ import Leads from "./pages/admin/Leads";
 import Followups from "./pages/admin/Followups";
 import ViewLead from "./pages/admin/ViewLead";
 import ArchivedLeads from "./pages/admin/ArchivedLeads";
+import Register from "./pages/Register";
 
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ function App() {
   <Route path="/admin/leads/edit/:id" element={<EditLead />} />
   <Route path="/admin/leads/view/:id" element={<ViewLead />} />
   <Route path="/admin/archived-leads"element={<ArchivedLeads />}/>
+  <Route path="/register" element={<Register />} />
 
   <Route path="*" element={<NotFound />} />
 </Routes>

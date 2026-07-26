@@ -20,3 +20,8 @@ export const getCurrentUser = async () => {
 
   return response.data;
 };
+
+export const registerUser = async (data) => {
+  const response = await axiosInstance.post("register/", data);
+  return response.data;
+};
