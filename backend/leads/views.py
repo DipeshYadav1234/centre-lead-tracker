@@ -8,6 +8,9 @@ from rest_framework.decorators import api_view, permission_classes
 import csv
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+import os
+from django.conf import settings
 
 from .models import Lead
 from .serializers import LeadSerializer, UserSerializer
@@ -138,3 +141,67 @@ def export_leads_csv(request):
         ])
 
     return response
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def complete_followup(request, pk):
+
+    lead = get_object_or_404(Lead, pk=pk)
+
+    if not request.user.is_staff and lead.assigned_owner != request.user:
+        return Response(
+            {"detail": "Permission denied"},
+            status=403
+        )
+
+    lead.status = request.data.get("status", lead.status)
+    lead.notes = request.data.get("notes", lead.notes)
+    lead.next_followup = request.data.get(
+        "next_followup",
+        lead.next_followup
+    )
+
+    lead.save()
+
+    return Response({"message": "Follow-up updated successfully"})
+
+
+@api_view(["POST"])
+def register_user(request):
+
+    company_code = request.data.get("company_code")
+
+    if company_code != settings.COMPANY_CODE:
+        return Response(
+            {"error": "Invalid Company Code"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    username = request.data.get("username")
+    password = request.data.get("password")
+    email = request.data.get("email")
+    first_name = request.data.get("first_name")
+    last_name = request.data.get("last_name")
+
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {"error": "Username already exists"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user = User.objects.create_user(
+        username=username,
+        password=password,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+    )
+
+    user.is_staff = True
+    user.is_superuser = False
+    user.save()
+
+    return Response(
+        {"message": "User created successfully"},
+        status=status.HTTP_201_CREATED,
+    )

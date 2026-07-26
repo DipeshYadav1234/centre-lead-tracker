@@ -60,4 +60,5 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "email",
             "is_staff",
+            "is_superuser",
         ]
